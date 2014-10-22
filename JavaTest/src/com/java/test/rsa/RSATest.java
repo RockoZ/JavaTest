@@ -2,12 +2,15 @@ package com.java.test.rsa;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import javax.crypto.Cipher;
+
 public class RSATest
 {
-	//base64 code
+	// base64 code
 	static String PUCLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCfRTdcPIH10gT9f31rQuIInLwe" + "\r"
 			+ "7fl2dtEJ93gTmjE9c2H+kLVENWgECiJVQ5sonQNfwToMKdO0b3Olf4pgBKeLThra" + "\r"
 			+ "z/L3nYJYlbqjHC3jTjUnZc0luumpXGsox62+PuSGBlfb8zJO6hix4GV/vhyQVCpG" + "\r"
@@ -37,6 +40,9 @@ public class RSATest
 		// PrivateKey privateKey = RSAUtils.loadPrivateKey(PRIVATE_KEY);
 		PrivateKey privateKey = RSAUtils.loadPrivateKey(privateIS);
 		byte[] b1 = RSAUtils.encryptData(source.getBytes(), publicKey);
-		System.out.println(">>>" + new String(RSAUtils.decryptData(b1, privateKey)));
+		// 签名
+		byte[] signedDate = RSAUtils.signData(b1, privateKey);
+		boolean isRight = RSAUtils.verifySign(b1, signedDate, publicKey);
+		System.out.println(">>> " + isRight + "  " + new String(RSAUtils.decryptData(b1, privateKey)));
 	}
 }

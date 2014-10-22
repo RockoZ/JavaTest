@@ -11,6 +11,7 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
@@ -334,6 +335,88 @@ public final class RSAUtils
 		System.out.println("PrivateExponent.length=" + rsaPrivateKey.getPrivateExponent().bitLength());
 		System.out.println("PrivatecExponent=" + rsaPrivateKey.getPrivateExponent().toString());
 
+	}
+
+	/**
+	 * 根据指定私钥对数据进行签名(默认签名算法为"SHA1withRSA")
+	 * 
+	 * @param data
+	 *            要签名的数据
+	 * @param priKey
+	 *            私钥
+	 * @return
+	 */
+	public static byte[] signData(byte[] data, PrivateKey priKey)
+	{
+		return signData(data, priKey, "SHA1withRSA");
+	}
+
+	/**
+	 * 根据指定私钥和算法对数据进行签名
+	 * 
+	 * @param data
+	 *            要签名的数据
+	 * @param priKey
+	 *            私钥
+	 * @param algorithm
+	 *            签名算法
+	 * @return
+	 */
+	public static byte[] signData(byte[] data, PrivateKey priKey, String algorithm)
+	{
+		try
+		{
+			Signature signature = Signature.getInstance(algorithm);
+			signature.initSign(priKey);
+			signature.update(data);
+			return signature.sign();
+		} catch (Exception ex)
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * 用指定的公钥进行签名验证(默认签名算法为"SHA1withRSA")
+	 * 
+	 * @param data
+	 *            数据
+	 * @param sign
+	 *            签名结果
+	 * @param pubKey
+	 *            公钥
+	 * @return
+	 */
+	public static boolean verifySign(byte[] data, byte[] sign, PublicKey pubKey)
+	{
+		return verifySign(data, sign, pubKey, "SHA1withRSA");
+	}
+
+	/**
+	 * 用指定的公钥进行签名验证
+	 * 
+	 * @param data
+	 *            数据
+	 * @param sign
+	 *            签名结果
+	 * @param pubKey
+	 *            公钥
+	 * @param algorithm
+	 *            签名算法
+	 * @return
+	 */
+	public static boolean verifySign(byte[] data, byte[] sign, PublicKey pubKey, String algorithm)
+	{
+		try
+		{
+			Signature signature = Signature.getInstance(algorithm);
+			signature.initVerify(pubKey);
+			signature.update(data);
+			return signature.verify(sign);
+		} catch (Exception ex)
+		{
+			return false;
+		}
 	}
 
 }
